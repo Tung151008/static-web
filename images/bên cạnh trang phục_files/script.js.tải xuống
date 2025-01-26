@@ -1,0 +1,483 @@
+function stripVN(originalString) {
+  var VIETNAMESE_N_ASCII_MAP = {
+    "à": "a", "ả": "a", "ã": "a", "á": "a", "ạ": "a", "ă": "a", "ằ": "a", "ẳ": "a", "ẵ": "a",
+    "ắ": "a", "ặ": "a", "â": "a", "ầ": "a", "ẩ": "a", "ẫ": "a", "ấ": "a", "ậ": "a", "đ": "d",
+    "è": "e", "ẻ": "e", "ẽ": "e", "é": "e", "ẹ": "e", "ê": "e", "ề": "e", "ể": "e", "ễ": "e",
+    "ế": "e", "ệ": "e", "ì": 'i', "ỉ": 'i', "ĩ": 'i', "í": 'i', "ị": 'i', "ò": 'o', "ỏ": 'o',
+    "õ": "o", "ó": "o", "ọ": "o", "ô": "o", "ồ": "o", "ổ": "o", "ỗ": "o", "ố": "o", "ộ": "o",
+    "ơ": "o", "ờ": "o", "ở": "o", "ỡ": "o", "ớ": "o", "ợ": "o", "ù": "u", "ủ": "u", "ũ": "u",
+    "ú": "u", "ụ": "u", "ư": "u", "ừ": "u", "ử": "u", "ữ": "u", "ứ": "u", "ự": "u", "ỳ": "y",
+    "ỷ": "y", "ỹ": "y", "ý": "y", "ỵ": "y", "À": "A", "Ả": "A", "Ã": "A", "Á": "A", "Ạ": "A",
+    "Ă": "A", "Ằ": "A", "Ẳ": "A", "Ẵ": "A", "Ắ": "A", "Ặ": "A", "Â": "A", "Ầ": "A", "Ẩ": "A",
+    "Ẫ": "A", "Ấ": "A", "Ậ": "A", "Đ": "D", "È": "E", "Ẻ": "E", "Ẽ": "E", "É": "E", "Ẹ": "E",
+    "Ê": "E", "Ề": "E", "Ể": "E", "Ễ": "E", "Ế": "E", "Ệ": "E", "Ì": "I", "Ỉ": "I", "Ĩ": "I",
+    "Í": "I", "Ị": "I", "Ò": "O", "Ỏ": "O", "Õ": "O", "Ó": "O", "Ọ": "O", "Ô": "O", "Ồ": "O",
+    "Ổ": "O", "Ỗ": "O", "Ố": "O", "Ộ": "O", "Ơ": "O", "Ờ": "O", "Ở": "O", "Ỡ": "O", "Ớ": "O",
+    "Ợ": "O", "Ù": "U", "Ủ": "U", "Ũ": "U", "Ú": "U", "Ụ": "U", "Ư": "U", "Ừ": "U", "Ử": "U",
+    "Ữ": "U", "Ứ": "U", "Ự": "U", "Ỳ": "Y", "Ỷ": "Y", "Ỹ": "Y", "Ý": "Y", "Ỵ": "Y"
+  };
+
+  if (originalString == null || originalString.length == 0) {
+    return originalString;
+  }
+
+  var removedDuplicatedSpacesString = originalString.replace(/\s+/g, " ");
+  var removedVietnameseCharsString = "";
+  for (var idx = 0; idx < removedDuplicatedSpacesString.length; idx++) {
+    var ch = removedDuplicatedSpacesString[idx];
+    var alternativeChar = VIETNAMESE_N_ASCII_MAP[ch];
+    if (alternativeChar != null) {
+      removedVietnameseCharsString += alternativeChar;
+    } else {
+      removedVietnameseCharsString += ch;
+    }
+  }
+  return removedVietnameseCharsString.toLowerCase();
+};
+
+function setUrlParam(values, suffix) {
+  if (Array.isArray(values) && values.length > 0) {
+    var url = new URL(window.location.href);
+    for (let index = 0; index < values.length; index++) {
+      const name = values[index].name;
+      const value = values[index].value;
+      url.searchParams.set(name, value);
+    }
+    var appendStr = (!!suffix && !url.href.includes(suffix) ? suffix : '');
+    window.location.href = url.href + appendStr;
+  }
+};
+
+jQuery(function ($) {
+  var $window = $(window);
+  var $body = $('body');
+  var width = $window.width();
+  var url = window.location.href;
+
+  $window.resize(function() {
+    width = $window.width();
+  });
+
+  if (url.split('/d/').length === 2) {
+    var path = url.split('/d/')[0];
+    $('a[href="' + path + '/"]').parents('li.menu-item').addClass('current-menu-item');
+  }
+
+  // Header
+  $('.header .header__toggle').click(function(e) {
+    e.preventDefault();
+    $body.animate({ scrollTop: 0 }, 0);
+    $body.toggleClass('show-menu');
+    $(this).toggleClass('active');
+  });
+
+  // Scroll to top
+  $('a#scrollToTop').click(function(e) {
+    e.preventDefault();
+    $('html, body').animate({ scrollTop: 0 }, 400);
+  });
+
+  // News menu
+  $('.p-news__menu li.current-menu-item a, .p-news__menu.first-active li:first-child a').click(function(e) {
+    if (width < 750) {
+      e.preventDefault();
+      $('.p-news__menu').toggleClass('active');
+    }
+  });
+
+  // Slider
+  $('.slider .owl-carousel').each(function(){
+    $(this).owlCarousel({
+      items: 1,
+      nav: false,
+      dots: true,
+      loop: true,
+      mouseDrag: true,
+      autoplay: true,
+      autoplayHoverPause: true,
+      autoplayTimeout: 5000,
+      smartSpeed: 500,
+      autoHeight: true,
+    });
+  });
+
+  $('.p-home__heroes--main .p-home__heroes--list a').click(function (e) {
+    e.preventDefault();
+    var $this = $(this);
+    var id = $this.attr('href');
+    $('.p-home__heroes--main .p-home__hero').removeClass('active');
+    $('.p-home__heroes--main .p-home__heroes--list a').removeClass('active');
+    $('.p-home__heroes--main ' + id).addClass('active');
+    $this.addClass('active');
+  });
+
+  function searchKeyword(el, val) {
+    if (val.length > 0) {
+      $(el).addClass('d-none');
+      $(el + '[data-keyword*="'+ val +'"]').removeClass('d-none');
+    } else {
+      $(el).removeClass('d-none');
+    }
+  }
+
+  function filterAcademy(el, keyword, type, level) {
+    if (keyword.length > 0 || type.length > 0 || level.length > 0) {
+      $(el).addClass('d-none');
+      var keywordStr = (keyword.length > 0 ? '[data-keyword*="'+ keyword +'"]' : '');
+      var typeStr = (type.length > 0 ? '[data-type="'+ type +'"]' : '');
+      var levelStr = (level.length > 0 ? '[data-level="'+ level +'"]' : '');
+      $(el + keywordStr + typeStr + levelStr).removeClass('d-none');
+    } else {
+      $(el).removeClass('d-none');
+    }
+  }
+
+  function filterHeroes(el, keyword, type) {
+    if (keyword.length > 0 || type.length > 0) {
+      $(el).addClass('d-none');
+      var keywordStr = (keyword.length > 0 ? '[data-keyword*="'+ keyword +'"]' : '');
+      var typeStr = (type.length > 0 ? '[data-type*="'+ type +'"]' : '');
+      $(el + keywordStr + typeStr).removeClass('d-none');
+    } else {
+      $(el).removeClass('d-none');
+    }
+  }
+
+  // GAME MODES
+  $('.st-game-modes .search input').keyup(function() {
+    var val = stripVN($(this).val());
+    searchKeyword('.st-game-modes .st-game-modes__list .st-game-modes__item', val);
+  });
+
+  // EXTRA SKILLS
+  $('.st-extra-skills .search input').keyup(function() {
+    var val = stripVN($(this).val());
+    searchKeyword('.st-extra-skills .st-extra-skills__list .st-extra-skills__item', val);
+  });
+
+  // RUNES
+  var runesKeyword = '';
+  var runesType = '';
+  var runesLevel = '';
+
+  $('.st-runes .search input').keyup(function() {
+    runesKeyword = stripVN($(this).val());
+    filterAcademy('.st-runes .st-runes__list .st-runes__item', runesKeyword, runesType, runesLevel);
+  });
+
+  $('.st-runes .filter select[name="type"]').change(function() {
+    runesType = $(this).val();
+    filterAcademy('.st-runes .st-runes__list .st-runes__item', runesKeyword, runesType, runesLevel);
+  });
+
+  $('.st-runes .filter select[name="level"]').change(function() {
+    runesLevel = $(this).val();
+    filterAcademy('.st-runes .st-runes__list .st-runes__item', runesKeyword, runesType, runesLevel);
+  });
+
+  // ITEMS
+  var itemsKeyword = '';
+  var itemsType = '';
+  var itemsLevel = '';
+
+  $('.st-items .search input').keyup(function() {
+    itemsKeyword = stripVN($(this).val());
+    filterAcademy('.st-items .st-items__list .st-items__item', itemsKeyword, itemsType, itemsLevel);
+  });
+
+  $('.st-items .filter select[name="type"]').change(function() {
+    itemsType = $(this).val();
+    filterAcademy('.st-items .st-items__list .st-items__item', itemsKeyword, itemsType, itemsLevel);
+  });
+
+  $('.st-items .filter select[name="level"]').change(function() {
+    itemsLevel = $(this).val();
+    filterAcademy('.st-items .st-items__list .st-items__item', itemsKeyword, itemsType, itemsLevel);
+  });
+
+  // HEROES
+  var heroesKeyword = '';
+  var heroesType = '';
+
+  $('.st-heroes .search input').keyup(function() {
+    heroesKeyword = stripVN($(this).val());
+    filterHeroes('.st-heroes .st-heroes__list .st-heroes__item', heroesKeyword, heroesType);
+  });
+
+  $('.st-heroes .st-heroes__types a').click(function(e) {
+    e.preventDefault();
+    var $this = $(this);
+
+    if ($this.hasClass('active')) {
+      heroesType = '';
+      $this.removeClass('active');
+    } else {
+      $('.st-heroes .st-heroes__types a').removeClass('active');
+      $this.addClass('active');
+      heroesType = '[' + $this.data('id') + ']';
+    }
+
+    filterHeroes('.st-heroes .st-heroes__list .st-heroes__item', heroesKeyword, heroesType);
+  });
+
+  // HERO SKILLS
+  $('.hero__skills .hero__skills--list li a').click(function (e) {
+    e.preventDefault();
+    var $this = $(this);
+    var id = $this.attr('href');
+    $('.hero__skills .hero__skills--detail').removeClass('active');
+    $('.hero__skills .hero__skills--list li a').removeClass('active');
+    $('.hero__skills .hero__skills--detail' + id).addClass('active');
+    $this.addClass('active');
+  });
+
+  // HERO SKINS
+  $('.hero__skins .hero__skins--list li a').click(function (e) {
+    e.preventDefault();
+    var $this = $(this);
+    var id = $this.attr('href');
+    $('.hero__skins .hero__skins--detail').removeClass('active');
+    $('.hero__skins .hero__skins--list li a').removeClass('active');
+    $('.hero__skins .hero__skins--detail' + id).addClass('active');
+    $this.addClass('active');
+  });
+
+  // BADGES
+  $('.st-badges .st-badges__item--skills li a').click(function (e) {
+    e.preventDefault();
+    var $this = $(this);
+    var id = $this.attr('href');
+    var badgeId = $this.data('badge-id');
+    $('.st-badges__item#' + badgeId + ' .st-badges__item--skills li a').removeClass('active');
+    $('.st-badges__item#' + badgeId + ' .st-badges__skill').removeClass('active');
+    $('.st-badges .st-badges__skill' + id).addClass('active');
+    $this.addClass('active');
+  });
+
+  $('.st-badges .search input').keyup(function() {
+    var val = stripVN($(this).val());
+    searchKeyword('.st-badges .st-badges__list .st-badges__item', val);
+  });
+
+  // COLLAB GALLERY
+  $('.p-collab__sponsor--gallery .owl-carousel').each(function(){
+    $(this).owlCarousel({
+      items: 2,
+      nav: false,
+      dots: false,
+      loop: true,
+      center: true,
+      mouseDrag: true,
+      autoplay: true,
+      animateOut: true,
+      animateIn: true,
+      autoplayHoverPause: true,
+      autoplayTimeout: 5000,
+      smartSpeed: 3000,
+      responsive: {
+        0: {
+          items: 2,
+        },
+        750: {
+          items: 4,
+        }
+      }
+    });
+  });
+
+  // COLLAB PARTNERS
+  $('.p-collab__partners--images .owl-carousel').each(function(){
+    $(this).owlCarousel({
+      items: 3,
+      nav: false,
+      dots: false,
+      loop: true,
+      center: true,
+      mouseDrag: true,
+      autoplay: true,
+      animateOut: true,
+      animateIn: true,
+      autoplayHoverPause: true,
+      autoplayTimeout: 5000,
+      smartSpeed: 3000,
+      responsive: {
+        0: {
+          items: 3,
+        },
+        750: {
+          items: 6,
+        }
+      }
+    });
+  });
+
+  // COLLAB EVENT LOGO
+  $('.p-collab__host--logos .owl-carousel').each(function(){
+    $(this).owlCarousel({
+      items: 3,
+      nav: false,
+      dots: false,
+      loop: true,
+      mouseDrag: true,
+      autoplay: false,
+      autoplayHoverPause: false,
+      autoplayTimeout: 3000,
+      smartSpeed: 500,
+      responsive: {
+        0: {
+          items: 3,
+        },
+        750: {
+          items: 6,
+        }
+      }
+    });
+  });
+
+  // COLLAB STREAM SLIDER
+  $('.p-collab__stream--slider .owl-carousel').each(function(){
+    $(this).owlCarousel({
+      items: 2,
+      nav: false,
+      dots: false,
+      loop: true,
+      center: true,
+      mouseDrag: true,
+      autoplay: true,
+      animateOut: true,
+      animateIn: true,
+      autoplayHoverPause: true,
+      autoplayTimeout: 5000,
+      smartSpeed: 3000,
+      responsive: {
+        0: {
+          items: 2,
+        },
+        750: {
+          items: 4,
+        }
+      }
+    });
+  });
+  // $('.p-collab__stream--slider .owl-carousel').each(function(){
+  //   $(this).owlCarousel({
+  //     items: 1,
+  //     nav: false,
+  //     dots: true,
+  //     loop: true,
+  //     mouseDrag: true,
+  //     autoplay: true,
+  //     autoplayHoverPause: true,
+  //     autoplayTimeout: 5000,
+  //     smartSpeed: 500,
+  //     autoHeight: true,
+  //   });
+  // });
+
+  // COLLAB HOST SLIDER
+  $('.p-collab__host--slider .owl-carousel').each(function(){
+    $(this).owlCarousel({
+      items: 1,
+      nav: false,
+      dots: true,
+      loop: true,
+      mouseDrag: true,
+      autoplay: true,
+      autoplayHoverPause: true,
+      autoplayTimeout: 5000,
+      smartSpeed: 1000,
+      autoHeight: true,
+    });
+  });
+
+  // COLLAB COPYRIGHT SLIDER
+  $('.p-collab__copyright--slider .owl-carousel').each(function(){
+    $(this).owlCarousel({
+      items: 1,
+      nav: false,
+      dots: true,
+      loop: true,
+      mouseDrag: true,
+      autoplay: true,
+      autoplayHoverPause: true,
+      autoplayTimeout: 5000,
+      smartSpeed: 1000,
+      autoHeight: true,
+    });
+  });
+
+  // COLLAB HOST TABS
+  $('a.p-collab__host--logo').click(function (e) {
+    e.preventDefault();
+    var $this = $(this);
+    var id = $this.attr('href');
+    $('a.p-collab__host--logo').removeClass('active');
+    $('.p-collab__host--slider').removeClass('active');
+    $('.p-collab__host--slider' + id).addClass('active');
+    $this.addClass('active');
+  });
+
+  $('a.st-live-match__close').click(function (e) {
+    e.preventDefault();
+    $(this).parent().hide();
+  });
+
+  $('input.form-date').focus(function() {
+    $(this).attr('type', 'date');
+  });
+
+  $('input.form-date').blur(function() {
+    var $this = $(this);
+    var val = $this.val();
+    $this.attr('type', !val ? 'text' : 'date');
+  });
+
+  // Videos filter
+  $('.st-other-videos__filter #videoDate').change(function() {
+    var value = $(this).val();
+    setUrlParam([{ name: 'video_date', value: value }], '#listing');
+  });
+
+  $('.st-ranking__filter #rankingTournament').change(function() {
+    var value = $(this).val();
+    setUrlParam([
+      { name: 'tid', value: value },
+      { name: 'rid', value: '' },
+    ]);
+  });
+
+  // Ranking filter
+  $('.st-ranking__filter #rankingRound').change(function() {
+    var value = $(this).val();
+    setUrlParam([{ name: 'rid', value: value }]);
+  });
+
+  // Match Schedule filter
+  $('.st-match-schedule__filter #scheduleTournament').change(function() {
+    var value = $(this).val();
+    setUrlParam([
+      { name: 'tournament', value: value },
+      { name: 'round', value: '' },
+      { name: 'team', value: '' },
+    ], '#listing');
+  });
+
+  $('.st-match-schedule__filter #scheduleRound').change(function() {
+    var value = $(this).val();
+    setUrlParam([{ name: 'round', value: value }], '#listing');
+  });
+
+  $('.st-match-schedule__filter #scheduleTeam').change(function() {
+    var value = $(this).val();
+    setUrlParam([{ name: 'team', value: value }], '#listing');
+  });
+
+  $('.st-match-schedule__filter #scheduleDate').change(function() {
+    var value = $(this).val();
+    setUrlParam([{ name: 'date', value: value }], '#listing');
+  });
+});
+
+Fancybox.bind("[data-fancybox]", {
+  // Your custom options
+});

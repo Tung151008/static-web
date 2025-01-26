@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* Căn giữa toàn bộ trang */
+    body {
+      display: flex;
+      justify-content: center; /* Căn giữa cột theo chiều ngang */
+      align-items: center; /* Căn giữa cột theo chiều dọc */
+      height: 100vh; /* Chiều cao của trang bằng 100% cửa sổ */
+      margin: 0; /* Loại bỏ margin mặc định */
+    }
+    .column {
+      display: flex;
+      flex-direction: column; /* Sắp xếp các phần tử trong cột theo chiều dọc */
+      justify-content: center;
+      align-items: center; /* Căn giữa các phần tử trong cột */
+      width: 300px; /* Chiều rộng của cột */
+      height: 400px; /* Chiều cao của cột */
+      background-color: lightblue;
+      padding: 20px;
+      border: 2px solid #4CAF50; /* Viền cho cột */
+    }
+    .item {
+      padding: 10px;
+      background-color: lightgreen;
+      border: 1px solid #ccc;
+      margin: 10px 0; /* Khoảng cách giữa các phần tử */
+    }
+  </style>
+  <title>Căn giữa cột ra giữa trang</title>
+</head>
+<body>
+  <div class="column">
+    <div class="item">Nội dung 1</div>
+    <div class="item">Nội dung 2</div>
+    <div class="item">Nội dung 3</div>
+  </div>
+</body>
+</html>
+
